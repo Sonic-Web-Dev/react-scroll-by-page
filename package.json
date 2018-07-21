@@ -1,0 +1,41 @@
+{
+  "name": "react-scroll-by-page",
+  "version": "1.0.0",
+  "description": "A react full page scrolling component that works with both touch, scroll and keydown/keyup",
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "webpack-dev-server --config ./webpack.config.js --mode development",
+    "build": "rm -rf lib && mkdir lib && babel src -d lib",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "keywords": ["react", "fullpage", "scroll"],
+  "author": "Jason Hartin <jason@sonicwebdev.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^8.2.6",
+    "babel-loader": "^7.1.5",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^17.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "eslint-plugin-react": "^7.10.0",
+    "react-hot-loader": "^4.3.3",
+    "styled-components": "^3.3.3",
+    "webpack": "^4.15.1",
+    "webpack-cli": "^3.0.8",
+    "webpack-dev-server": "^3.1.4"
+  },
+  "dependencies": {
+    "babel-preset-env": "^1.7.0",
+    "prop-types": "^15.6.2",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-motion": "^0.5.2",
+    "wheel": "0.0.5"
+  }
+}
