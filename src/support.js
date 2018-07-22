@@ -4,6 +4,11 @@ import { addWheelListener, removeWheelListener } from 'wheel';
 import { spring } from 'react-motion';
 import Slider from './slider';
 
+//setup a ref so that you can use the next, prev and goto actions
+// / set isMobile to true so that any keydowns are ignored. 
+//This is becose with ios keyboard done button you need to watch the unfocus which can will for me caused a duplicate action issue when using return on the keyboard. So i handle the keydown action in my code with the next and prev ref
+//if you want to use the keydown functionality then set mobile to false and you can customize which keydown actions do what.
+//i use in my own code import {isMobile} from 'react-device-detect'; to determine it.
 class SliderSupport extends Component {
   constructor(props) {
     super(props);
@@ -15,7 +20,6 @@ class SliderSupport extends Component {
       pressed: [0, 0],
       delta: [0, 0],
       pageIndex: 0,
-      ignoreScroll: false,
     };
   }
 
@@ -36,13 +40,11 @@ class SliderSupport extends Component {
   }
 
     onWheel = (event) => {
-      console.log('onWheel')
-      console.log(event)
       const { isScrolling } = this.state;
-      const { pause } = this.props;
+      const { preventScroll } = this.props;
       const { timeStamp } = event;
-    
-      if (pause || isScrolling) {
+
+      if (preventScroll || isScrolling) {
         return;
       }
 
@@ -64,16 +66,23 @@ class SliderSupport extends Component {
     }
 
     onKeydown = (event) => {
-      if (event.key === 'ArrowUp') {
-        this.previous(true);
-      } else if (event.key === 'ArrowDown') {
+      const { keyActionsNext, keyActionsPrevious, isMobile } = this.props;
+      const { key } = event;
+      if (isMobile) {
+        return;
+      }
+      if (keyActionsNext.includes(key)) {
         this.next(true);
+        event.preventDefault();
+      } else if (keyActionsPrevious.includes(key)) {
+        this.previous(true);
+        event.preventDefault();
       }
     }
-    
+
     scrollTo = (index, onKeyPress) => {
       const { pageIndex, delta, isScrolling } = this.state;
-      const { children, pageHeight, onSroll } = this.props;
+      const { children, pageHeight, onScroll } = this.props;
       const pageCount = Children.count(children);
 
       if (index > pageCount - 1 || isScrolling) {
@@ -84,8 +93,8 @@ class SliderSupport extends Component {
       const distance = directional * pageHeight;
 
       const [x] = delta;
-      
-      onSroll();
+
+      onScroll();
 
       this.setState({
         pageIndex: index,
@@ -112,6 +121,10 @@ class SliderSupport extends Component {
     }
 
     start = (event) => {
+      const { preventTouch } = this.props;
+      if (preventTouch) {
+        return;
+      }
       const source = event.touches ? event.touches[0] : event;
       const { pageX, pageY } = source;
       this.setState({
@@ -213,20 +226,17 @@ class SliderSupport extends Component {
           console.log('onKeyPress');
           this.resetPage();
         } else {
-          console.log('scroll');
           clearTimeout(this.scrollTimout);
           this.scrollTimout = setTimeout(() => {
             this.resetPage();
-          }, 500);
+          }, 600);
         }
       }
-  
     }
 
     render() {
       let { style } = this.props;
       if (style) {
-        console.log('style');
         return (
           <Slider
             ref={(ref) => { (this.slider = ref); }}
@@ -269,9 +279,14 @@ class SliderSupport extends Component {
 
 SliderSupport.propTypes = {
   pageHeight: PropTypes.number,
-  pause: PropTypes.bool,
+  preventScroll: PropTypes.bool,
+  preventTouch: PropTypes.bool,
   onPage: PropTypes.func,
-  onSroll: PropTypes.func,
+  onScroll: PropTypes.func,
+  onKeypress: PropTypes.func,
+  isMobile: PropTypes.bool,
+  keyActionsNext: PropTypes.array,
+  keyActionsPrevious: PropTypes.array,
   style: PropTypes.object,
   children: PropTypes.any,
   springThreashold: PropTypes.number,
@@ -279,9 +294,14 @@ SliderSupport.propTypes = {
 SliderSupport.defaultProps = {
   pageHeight: window.innerHeight,
   onPage: () => {},
-  onSroll: () => {},
+  onScroll: () => {},
+  onKeypress: () => {},
+  keyActionsNext: ['ArrowDown', 'Enter'],
+  keyActionsPrevious: ['ArrowUp'],
   springThreashold: 15,
-  pause: false,
+  preventScroll: false,
+  preventTouch: false,
+  isMobile: false,
 };
 
 

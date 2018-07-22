@@ -1,7 +1,7 @@
 {
   "name": "react-scroll-by-page",
   "version": "1.0.0",
-  "description": "A react full page scrolling component that works with both touch, scroll and keydown/keyup",
+  "description": "A react full page scrolling component that works with both touch, scroll, keydown/keyup and enter. Customize which key actions to use, pause touch and scroll",
   "main": "lib/index.js",
   "scripts": {
     "start": "webpack-dev-server --config ./webpack.config.js --mode development",
